@@ -26,9 +26,12 @@ import {
   DollarSign,
   Palette,
   ArrowLeft,
-  Check
+  Check,
+  X,
+  Eye
 } from 'lucide-react';
 import { cn, formatINR } from '../../lib/utils';
+import { CoachPlanUpgradeModal } from './CoachPlanUpgradeModal';
 
 export type SettingsSection = 
   | 'profile' 
@@ -83,6 +86,15 @@ export const CoachSettingsModal: React.FC<CoachSettingsModalProps> = ({
   const [tapeMeasurementEnabled, setTapeMeasurementEnabled] = useState(true);
   const [honestyAuditEnabled, setHonestyAuditEnabled] = useState(true);
 
+  // Plan Management Modal State
+  const [isPlanUpgradeModalOpen, setIsPlanUpgradeModalOpen] = useState(false);
+  const [planModalMode, setPlanModalMode] = useState<'review' | 'upgrade'>('upgrade');
+  const [invoices, setInvoices] = useState([
+    { id: 'INV-2026-0922', date: 'Sep 28, 2026', amount: formatINR(coach.monthlyFee || 9999), status: 'Paid' },
+    { id: 'INV-2026-0822', date: 'Aug 28, 2026', amount: formatINR(coach.monthlyFee || 9999), status: 'Paid' },
+    { id: 'INV-2026-0722', date: 'Jul 28, 2026', amount: formatINR(coach.monthlyFee || 9999), status: 'Paid' },
+  ]);
+
   if (!isOpen) return null;
 
   const sections = [
@@ -96,7 +108,7 @@ export const CoachSettingsModal: React.FC<CoachSettingsModalProps> = ({
     {
       id: 'subscription' as const,
       label: 'Subscription & Plan',
-      desc: 'Growth Pro Plan, capacity & invoices',
+      desc: `${coach.plan} Plan, capacity & invoices`,
       icon: CreditCard,
       badge: 'Active'
     },
@@ -141,12 +153,12 @@ export const CoachSettingsModal: React.FC<CoachSettingsModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-0 sm:p-4 font-sans animate-in fade-in duration-150">
-      <div className="bg-white rounded-none sm:rounded-3xl max-w-4xl w-full shadow-2xl border-0 sm:border border-slate-200 overflow-hidden flex flex-col h-full sm:h-[680px]">
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-0 sm:p-3 md:p-4 font-sans animate-in fade-in duration-150 overflow-y-auto">
+      <div className="bg-white rounded-none sm:rounded-3xl max-w-4xl w-full shadow-2xl border-0 sm:border border-slate-200 overflow-hidden flex flex-col h-full sm:h-[min(680px,94vh)] max-h-[96vh]">
         
         {/* Top Header */}
-        <div className="px-4 sm:px-6 py-3.5 border-b border-slate-100 flex items-center justify-between bg-slate-50/70 shrink-0">
-          <div className="flex items-center gap-3">
+        <div className="px-3.5 sm:px-6 py-3 border-b border-slate-100 flex items-center justify-between bg-slate-50/70 shrink-0">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
             {/* Prominent Back Button (Desktop & Mobile) */}
             <button
               onClick={() => {
@@ -156,27 +168,36 @@ export const CoachSettingsModal: React.FC<CoachSettingsModalProps> = ({
                   onClose();
                 }
               }}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold transition-all shadow-2xs cursor-pointer group"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold transition-all shadow-2xs cursor-pointer group shrink-0"
               title={mobileView === 'detail' ? "Back to Settings menu" : "Back to Dashboard"}
             >
               <ArrowLeft className="w-3.5 h-3.5 text-slate-500 group-hover:-translate-x-0.5 transition-transform" />
               <span>{mobileView === 'detail' ? 'Back' : 'Back to Dashboard'}</span>
             </button>
 
-            <div className="h-4 w-px bg-slate-200 hidden sm:block" />
+            <div className="h-4 w-px bg-slate-200 hidden sm:block shrink-0" />
 
-            <div>
-              <h2 className="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
+            <div className="min-w-0">
+              <h2 className="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2 truncate">
                 <span>Studio & App Settings</span>
                 <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 hidden xs:inline-block">
                   CoachOS Pro
                 </span>
               </h2>
-              <p className="text-[11px] text-slate-500 hidden md:block">
+              <p className="text-[11px] text-slate-500 hidden md:block truncate">
                 Manage your subscription, client notification cadence, and bi-weekly in-person protocols
               </p>
             </div>
           </div>
+
+          {/* Direct Close Button */}
+          <button
+            onClick={onClose}
+            className="w-8 h-8 rounded-full bg-slate-200/70 hover:bg-slate-300 text-slate-600 hover:text-slate-900 flex items-center justify-center transition-colors shrink-0 ml-2"
+            title="Close Settings"
+          >
+            <X className="w-4 h-4" />
+          </button>
         </div>
 
         {/* Master-Detail Layout */}
@@ -324,37 +345,95 @@ export const CoachSettingsModal: React.FC<CoachSettingsModalProps> = ({
                 </div>
 
                 {/* Current Plan Card */}
-                <div className="p-5 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 text-white relative overflow-hidden shadow-md">
-                  <div className="flex items-start justify-between relative z-10">
-                    <div>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
-                        Current Active Plan
-                      </span>
-                      <h4 className="text-lg font-black text-white mt-1.5">Growth Pro Plan</h4>
-                      <p className="text-xs text-slate-300 mt-0.5">Auto-renews on Oct 28, 2026 · HDFC Bank ending 8812</p>
-                    </div>
+                {(() => {
+                  const clientQuota = coach.plan === 'Essential' ? 35 : coach.plan === 'Scale' ? 500 : 150;
+                  const planFullName = coach.plan === 'Essential' ? 'Essential Solo' : coach.plan === 'Scale' ? 'Scale Studio' : 'Growth Pro';
+                  const activeCustomers = coach.stats?.activeCustomers || 86;
+                  const utilizationPct = Math.min(100, Math.round((activeCustomers / clientQuota) * 100));
+                  const slotsRemaining = Math.max(0, clientQuota - activeCustomers);
+                  const currentFee = coach.monthlyFee || (coach.plan === 'Essential' ? 5999 : coach.plan === 'Scale' ? 14999 : 9999);
 
-                    <div className="text-right">
-                      <div className="text-2xl font-black text-white">₹9,999</div>
-                      <span className="text-[11px] text-slate-400">per month</span>
-                    </div>
-                  </div>
+                  return (
+                    <div className="p-5 rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white relative overflow-hidden shadow-lg border border-slate-700/50">
+                      {/* Decorative background glow */}
+                      <div className="absolute top-0 right-0 -mr-10 -mt-10 w-44 h-44 rounded-full bg-emerald-500/10 blur-2xl pointer-events-none" />
 
-                  {/* Active Capacity Bar */}
-                  <div className="mt-5 pt-4 border-t border-white/10 relative z-10">
-                    <div className="flex items-center justify-between text-xs mb-1.5">
-                      <span className="text-slate-300 font-medium">Active Clients Quota:</span>
-                      <span className="font-bold text-emerald-300">86 / 150 Clients (57% Used)</span>
+                      <div className="flex flex-wrap items-start justify-between gap-3 relative z-10">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 inline-flex items-center gap-1.5">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                              Current Active Plan
+                            </span>
+                            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-white/10 text-slate-300">
+                              Monthly Billing
+                            </span>
+                          </div>
+                          <h4 className="text-xl font-black text-white mt-2 flex items-center gap-2">
+                            {planFullName} Plan
+                          </h4>
+                          <p className="text-xs text-slate-300 mt-0.5 flex items-center gap-1.5">
+                            <span>Auto-renews on Oct 28, 2026</span>
+                            <span>•</span>
+                            <span className="font-mono text-slate-400">HDFC Bank ending 8812</span>
+                          </p>
+                        </div>
+
+                        <div className="text-right">
+                          <div className="text-2xl font-black text-white">{formatINR(currentFee)}</div>
+                          <span className="text-[11px] text-slate-400">per month (All-inclusive)</span>
+                        </div>
+                      </div>
+
+                      {/* Active Capacity Bar */}
+                      <div className="mt-5 pt-4 border-t border-white/10 relative z-10">
+                        <div className="flex items-center justify-between text-xs mb-1.5">
+                          <span className="text-slate-300 font-medium">Active Clients Quota:</span>
+                          <span className="font-bold text-emerald-300">
+                            {activeCustomers} / {clientQuota} Clients ({utilizationPct}% Used)
+                          </span>
+                        </div>
+                        <div className="w-full h-2.5 bg-black/40 rounded-full overflow-hidden p-0.5 border border-white/10">
+                          <div 
+                            className="h-full bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full transition-all duration-500"
+                            style={{ width: `${utilizationPct}%` }}
+                          />
+                        </div>
+                        <div className="flex items-center justify-between text-[10px] text-slate-400 mt-1.5">
+                          <span>{slotsRemaining} client slots remaining this cycle</span>
+                          <span className="text-slate-300">Reset on 28th of every month</span>
+                        </div>
+                      </div>
+
+                      {/* Action Buttons: Upgrade Plan and Review Plan Details */}
+                      <div className="mt-5 pt-4 border-t border-white/10 flex flex-wrap items-center gap-2.5 relative z-10">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setPlanModalMode('upgrade');
+                            setIsPlanUpgradeModalOpen(true);
+                          }}
+                          className="flex-1 min-w-[140px] px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-bold text-xs shadow-md shadow-emerald-900/30 flex items-center justify-center gap-1.5 transition-all active:scale-[0.98] cursor-pointer"
+                        >
+                          <ArrowUpRight className="w-4 h-4" />
+                          Upgrade Plan
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setPlanModalMode('review');
+                            setIsPlanUpgradeModalOpen(true);
+                          }}
+                          className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white font-semibold text-xs border border-white/15 flex items-center justify-center gap-1.5 transition-all active:scale-[0.98] cursor-pointer"
+                        >
+                          <Eye className="w-4 h-4 text-emerald-400" />
+                          Review Plan Details
+                        </button>
+                      </div>
                     </div>
-                    <div className="w-full h-2.5 bg-black/40 rounded-full overflow-hidden p-0.5 border border-white/10">
-                      <div 
-                        className="h-full bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full"
-                        style={{ width: '57%' }}
-                      />
-                    </div>
-                    <span className="text-[10px] text-slate-400 mt-1 block">64 client slots remaining this cycle</span>
-                  </div>
-                </div>
+                  );
+                })()}
 
                 {/* Tax Status - Explicitly No GST Needed */}
                 <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start gap-3">
@@ -369,13 +448,12 @@ export const CoachSettingsModal: React.FC<CoachSettingsModalProps> = ({
 
                 {/* Invoices List */}
                 <div className="space-y-3">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500">Platform Invoices & Receipts</h4>
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500">Platform Invoices & Receipts</h4>
+                    <span className="text-[11px] text-emerald-600 font-medium">All Invoices Paid (Zero Overdue)</span>
+                  </div>
                   <div className="divide-y divide-slate-100 border border-slate-200/80 rounded-2xl overflow-hidden bg-white">
-                    {[
-                      { id: 'INV-2026-0922', date: 'Sep 28, 2026', amount: '₹9,999', status: 'Paid' },
-                      { id: 'INV-2026-0822', date: 'Aug 28, 2026', amount: '₹9,999', status: 'Paid' },
-                      { id: 'INV-2026-0722', date: 'Jul 28, 2026', amount: '₹9,999', status: 'Paid' },
-                    ].map((inv) => (
+                    {invoices.map((inv) => (
                       <div key={inv.id} className="p-3.5 flex items-center justify-between text-xs hover:bg-slate-50 transition-colors">
                         <div>
                           <div className="font-bold text-slate-900 font-mono">{inv.id}</div>
@@ -735,6 +813,24 @@ export const CoachSettingsModal: React.FC<CoachSettingsModalProps> = ({
           </main>
         </div>
       </div>
+
+      {/* Plan Upgrade & Review Modal */}
+      <CoachPlanUpgradeModal
+        isOpen={isPlanUpgradeModalOpen}
+        onClose={() => setIsPlanUpgradeModalOpen(false)}
+        initialMode={planModalMode}
+        onPlanUpgraded={(newPlan, newFee) => {
+          setInvoices(prev => [
+            {
+              id: `INV-2026-${Math.floor(1000 + Math.random() * 9000)}`,
+              date: 'Oct 05, 2026 (Upgraded)',
+              amount: formatINR(newFee),
+              status: 'Paid'
+            },
+            ...prev
+          ]);
+        }}
+      />
     </div>
   );
 };

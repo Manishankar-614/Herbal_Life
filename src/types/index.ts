@@ -15,6 +15,7 @@ export type CoachNavScreen =
 export type CustomerNavTab = 
   | 'home'
   | 'journey'
+  | 'shop'
   | 'progress'
   | 'rewards'
   | 'referral'
@@ -120,12 +121,16 @@ export interface StoreItem {
   category: 'Products' | 'Programs' | 'Consultations' | 'Memberships' | 'Packages';
   price: number;
   originalPrice?: number;
-  ctaType: 'Buy Now' | 'Request Product' | 'Talk to Coach' | 'Approved Purchase Link';
+  coachMargin?: number;
+  duration?: string;
+  isCoachDirect?: boolean;
+  ctaType: 'Buy Now' | 'Request Product' | 'Talk to Coach' | 'Approved Purchase Link' | 'Book Consultation';
   description: string;
   inStock: boolean;
   image: string;
   rating: number;
   badge?: string;
+  soldCount?: number;
 }
 
 export interface CoachProfile {

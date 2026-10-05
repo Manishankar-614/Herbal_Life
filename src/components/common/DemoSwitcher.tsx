@@ -272,6 +272,21 @@ export const DemoSwitcher: React.FC = () => {
                 <button
                   onClick={() => {
                     setCurrentRole('customer');
+                    setCustomerTab('shop');
+                    setIsOpen(false);
+                  }}
+                  className={cn(
+                    "px-2 py-1.5 rounded-lg border text-center transition-all",
+                    currentRole === 'customer' && customerTab === 'shop'
+                      ? "bg-sky-600 text-white border-sky-500 font-medium"
+                      : "bg-slate-800/80 text-slate-300 border-slate-700 hover:bg-slate-700"
+                  )}
+                >
+                  Shop 🛍️
+                </button>
+                <button
+                  onClick={() => {
+                    setCurrentRole('customer');
                     setCustomerTab('rewards');
                     setIsOpen(false);
                   }}

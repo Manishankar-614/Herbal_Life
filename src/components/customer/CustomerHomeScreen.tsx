@@ -16,7 +16,8 @@ import {
   Gift, 
   Trophy, 
   Calendar,
-  Zap
+  Zap,
+  ShoppingBag
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
@@ -370,6 +371,30 @@ export const CustomerHomeScreen: React.FC = () => {
             <span className="text-[9px] text-amber-400">Ready to Log</span>
           </div>
         </div>
+      </div>
+
+      {/* Coach Store & 1:1 Consultation Teaser */}
+      <div 
+        onClick={() => setCustomerTab('shop')}
+        className="bg-gradient-to-r from-emerald-950 via-slate-900 to-slate-950 text-white rounded-3xl p-4 border border-emerald-900/50 shadow-sm flex items-center justify-between cursor-pointer hover:border-emerald-500/50 transition-all active:scale-[0.99]"
+      >
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center shrink-0">
+            <ShoppingBag className="w-5 h-5" />
+          </div>
+          <div>
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs font-black text-white">Coach Store & 1:1 Calls</span>
+              <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+                Direct
+              </span>
+            </div>
+            <p className="text-[10px] text-slate-300 mt-0.5">
+              Book private review calls, detox infusions & supplements (+150 XP)
+            </p>
+          </div>
+        </div>
+        <ChevronRight className="w-5 h-5 text-emerald-400 shrink-0" />
       </div>
 
       {/* Message from Coach Kavya */}

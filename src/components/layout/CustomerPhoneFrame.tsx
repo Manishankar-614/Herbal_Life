@@ -15,7 +15,8 @@ import {
   ChevronLeft,
   Wifi,
   Battery,
-  Share2
+  Share2,
+  ShoppingBag
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
@@ -34,6 +35,7 @@ export const CustomerPhoneFrame: React.FC<{ children: React.ReactNode }> = ({ ch
   const navItems = [
     { id: 'home', label: 'Home', icon: Home },
     { id: 'journey', label: 'Journey', icon: Compass, special: true },
+    { id: 'shop', label: 'Shop', icon: ShoppingBag },
     { id: 'progress', label: 'Progress', icon: BarChart2 },
     { id: 'rewards', label: 'Rewards', icon: Award },
     { id: 'coach', label: 'Coach', icon: MessageSquare },
@@ -42,29 +44,39 @@ export const CustomerPhoneFrame: React.FC<{ children: React.ReactNode }> = ({ ch
   const isIntakeFlow = customerTab === 'welcome' || customerTab === 'assessment';
 
   return (
-    <div className="min-h-screen bg-slate-900 sm:py-6 md:py-10 p-0 sm:px-4 flex flex-col items-center justify-center relative overflow-hidden font-sans">
+    <div className="min-h-[100dvh] h-auto bg-slate-900 py-1 sm:py-2.5 px-0 sm:px-4 flex flex-col items-center justify-start overflow-y-auto font-sans">
       {/* Background ambient lighting matching theme */}
       <div 
         className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full blur-3xl opacity-20 pointer-events-none transition-colors duration-500"
         style={{ backgroundColor: 'var(--brand-primary)' }}
       />
 
-      {/* Top Header Helper Bar for Investors/Reviewers */}
-      <div className="w-full max-w-[390px] mb-2 sm:mb-3 flex items-center justify-between text-xs text-slate-400 px-3 pt-2 sm:pt-0">
-        <div className="flex items-center gap-2">
+      {/* Top Header Helper Bar (Sticky, always visible at top of window regardless of screen size) */}
+      <div className="w-full max-w-[390px] mb-1.5 px-3 py-1 flex items-center justify-between text-xs text-slate-400 shrink-0 z-50 sticky top-0 bg-slate-900/90 backdrop-blur-md">
+        <div className="flex items-center gap-1.5">
           <button
             onClick={() => {
               setCurrentRole('coach');
               setCoachScreen('command-center');
             }}
-            className="flex items-center gap-1 text-slate-300 hover:text-white transition-colors bg-slate-800/80 px-2.5 py-1 rounded-full border border-slate-700"
+            className="flex items-center gap-1 text-white hover:text-white transition-all bg-slate-800 hover:bg-slate-750 px-3 py-1.5 rounded-full border border-slate-700 font-bold shadow-xs active:scale-95 cursor-pointer text-xs"
           >
-            <ChevronLeft className="w-3.5 h-3.5" />
-            <span>Coach Dashboard</span>
+            <ChevronLeft className="w-3.5 h-3.5 text-emerald-400" />
+            <span>← Exit to Coach</span>
           </button>
         </div>
 
         <div className="flex items-center gap-2">
+          {customerTab !== 'home' && (
+            <button
+              onClick={() => setCustomerTab('home')}
+              className="flex items-center gap-1 text-slate-200 hover:text-white transition-colors bg-slate-800/90 px-2.5 py-1 rounded-full border border-slate-700 text-xs font-semibold"
+            >
+              <ArrowLeft className="w-3 h-3 text-emerald-400" />
+              <span>Home</span>
+            </button>
+          )}
+
           <button
             onClick={() => setCustomerTab('referral')}
             className={cn(
@@ -74,28 +86,53 @@ export const CustomerPhoneFrame: React.FC<{ children: React.ReactNode }> = ({ ch
                 : "bg-slate-800/80 text-amber-300 border border-amber-400/30 hover:bg-slate-700"
             )}
           >
-            <Gift className="w-3.5 h-3.5" />
-            <span>Refer a Friend</span>
+            <Gift className="w-3 h-3" />
+            <span>Referral</span>
           </button>
         </div>
       </div>
 
-      {/* Phone Mockup Frame (Full-bleed on real mobile screens, 390px iPhone dimension on desktop) */}
-      <div className="relative w-full sm:max-w-[390px] h-screen sm:h-[844px] bg-white rounded-none sm:rounded-[44px] shadow-2xl border-0 sm:border-[9px] border-slate-800 flex flex-col overflow-hidden sm:ring-1 sm:ring-slate-700/50">
+      {/* Phone Mockup Frame (Responsive height that always fits within any viewport!) */}
+      <div className="relative w-full sm:max-w-[390px] h-[calc(100dvh-3.2rem)] sm:h-[min(812px,calc(100dvh-3.4rem))] bg-white rounded-none sm:rounded-[40px] shadow-2xl border-0 sm:border-[8px] border-slate-800 flex flex-col overflow-hidden sm:ring-1 sm:ring-slate-700/50 shrink-0">
         
-        {/* Dynamic Island & Notch Area */}
-        <div className="h-11 bg-white pt-2.5 px-6 flex items-center justify-between shrink-0 select-none z-40 border-b border-slate-50">
-          <span className="text-[12px] font-semibold text-slate-800 tracking-tight">9:41</span>
+        {/* Dynamic Island & Notch Area with in-frame Back to Coach button */}
+        <div className="h-11 bg-white pt-1.5 px-3.5 flex items-center justify-between shrink-0 select-none z-40 border-b border-slate-100">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => {
+                setCurrentRole('coach');
+                setCoachScreen('command-center');
+              }}
+              className="flex items-center gap-0.5 text-[10px] font-bold text-slate-700 hover:text-slate-950 bg-slate-100 hover:bg-slate-200 px-2 py-0.5 rounded-full border border-slate-200 cursor-pointer active:scale-95 transition-all"
+              title="Return to Coach Dashboard"
+            >
+              <ChevronLeft className="w-3 h-3 text-emerald-600" />
+              <span>Coach</span>
+            </button>
+            <span className="text-[11px] font-semibold text-slate-800 tracking-tight">9:41</span>
+          </div>
           
           {/* Dynamic Island pill */}
-          <div className="w-24 h-5 bg-slate-900 rounded-full flex items-center justify-center gap-1.5 px-2">
+          <div className="w-20 h-5 bg-slate-900 rounded-full flex items-center justify-center gap-1 px-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
             <span className="text-[9px] text-slate-300 font-medium tracking-tight">Kavya Live</span>
           </div>
 
-          <div className="flex items-center gap-1 text-slate-700">
-            <Wifi className="w-3 h-3" />
-            <Battery className="w-3.5 h-3.5" />
+          <div className="flex items-center gap-1.5 text-slate-700">
+            {customerTab !== 'home' ? (
+              <button
+                onClick={() => setCustomerTab('home')}
+                className="text-[10px] font-bold text-slate-700 hover:text-slate-900 px-2 py-0.5 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-200 flex items-center gap-0.5 transition-colors cursor-pointer"
+              >
+                <ArrowLeft className="w-2.5 h-2.5 text-slate-500" />
+                <span>Home</span>
+              </button>
+            ) : (
+              <>
+                <Wifi className="w-3 h-3" />
+                <Battery className="w-3.5 h-3.5" />
+              </>
+            )}
           </div>
         </div>
 

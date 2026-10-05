@@ -28,7 +28,7 @@ export const INITIAL_COACH: CoachProfile = {
     referralLeads: 7,
     customersAtRisk: 9,
     renewalsDue: 6,
-    monthRevenue: 184000,
+    monthRevenue: 68500,
   },
 };
 

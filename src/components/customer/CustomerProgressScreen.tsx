@@ -12,7 +12,8 @@ import {
   Camera, 
   Activity, 
   Trophy,
-  ArrowRight
+  ArrowRight,
+  ArrowLeft
 } from 'lucide-react';
 import { 
   LineChart, 
@@ -26,7 +27,7 @@ import {
 import { cn } from '../../lib/utils';
 
 export const CustomerProgressScreen: React.FC = () => {
-  const { selectedCustomer } = useApp();
+  const { selectedCustomer, setCustomerTab } = useApp();
   const [activeMetricTab, setActiveMetricTab] = useState<'weight' | 'habits' | 'photos'>('weight');
 
   const cust = selectedCustomer; // Rohan Deshpande
@@ -43,6 +44,19 @@ export const CustomerProgressScreen: React.FC = () => {
 
   return (
     <div className="p-4 space-y-4 pb-12 font-sans">
+      {/* Top Header with Back Button */}
+      <div className="flex items-center justify-between pt-1">
+        <button
+          onClick={() => setCustomerTab('home')}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-700 text-xs font-bold shadow-2xs hover:bg-slate-50 transition-all cursor-pointer"
+        >
+          <ArrowLeft className="w-3.5 h-3.5 text-slate-500" />
+          <span>Back</span>
+        </button>
+        <span className="text-xs font-bold text-slate-800">Body & Habit Analytics</span>
+        <div className="w-14" />
+      </div>
+
       {/* Top Banner */}
       <div 
         className="rounded-3xl p-5 text-white shadow-xl relative overflow-hidden"

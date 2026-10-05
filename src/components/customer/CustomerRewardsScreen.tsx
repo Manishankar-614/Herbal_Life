@@ -11,7 +11,8 @@ import {
   Gift, 
   ChevronRight, 
   Star,
-  CheckCircle2
+  CheckCircle2,
+  ArrowLeft
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
@@ -50,6 +51,19 @@ export const CustomerRewardsScreen: React.FC = () => {
 
   return (
     <div className="p-4 space-y-4 pb-12 font-sans">
+      {/* Top Header with Back Button */}
+      <div className="flex items-center justify-between pt-1">
+        <button
+          onClick={() => setCustomerTab('home')}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-700 text-xs font-bold shadow-2xs hover:bg-slate-50 transition-all cursor-pointer"
+        >
+          <ArrowLeft className="w-3.5 h-3.5 text-slate-500" />
+          <span>Back</span>
+        </button>
+        <span className="text-xs font-bold text-slate-800">Rewards & Milestones</span>
+        <div className="w-14" />
+      </div>
+
       {/* Top Banner: XP & Streak Counter */}
       <div 
         className="rounded-3xl p-5 text-white shadow-xl relative overflow-hidden"

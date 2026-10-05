@@ -10,11 +10,13 @@ import {
   Lead, 
   CoachProfile,
   LeadStage,
-  CustomerStatus
+  CustomerStatus,
+  StoreItem
 } from '../types';
 import { INITIAL_COACH, COLOR_THEMES } from '../data/coach';
 import { INITIAL_CUSTOMERS } from '../data/customers';
 import { INITIAL_LEADS } from '../data/leads';
+import { STORE_ITEMS } from '../data/store';
 
 export interface TodayMission {
   id: string;
@@ -75,6 +77,11 @@ interface AppContextType {
   setTheme: (theme: 'light' | 'dark') => void;
   toggleTheme: () => void;
 
+  // Store & Coach Products/Consultations
+  storeItems: StoreItem[];
+  addStoreItem: (item: Omit<StoreItem, 'id'>) => void;
+  purchaseStoreItem: (itemId: string, details?: { notes?: string; slot?: string; address?: string }) => void;
+
   // Evening Wrap-up submission
   eveningWrapUpDone: boolean;
   submitEveningWrapUp: (data: { mealsLogged: boolean; waterGoalHit: boolean; workoutDone: boolean; reflection: string }) => void;
@@ -111,6 +118,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [customers, setCustomers] = useState<Customer[]>(INITIAL_CUSTOMERS);
   const [leads, setLeads] = useState<Lead[]>(INITIAL_LEADS);
   const [missions, setMissions] = useState<TodayMission[]>(INITIAL_MISSIONS);
+  const [storeItems, setStoreItems] = useState<StoreItem[]>(STORE_ITEMS);
   const [customerXp, setCustomerXp] = useState<number>(1420);
   const [customerStreak, setCustomerStreak] = useState<number>(12);
   const [referralCodeCopied, setReferralCodeCopied] = useState<boolean>(false);
@@ -221,7 +229,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       source: newLeadData.source || 'Website',
       stage: 'new',
       goal: newLeadData.goal || 'General Transformation',
-      value: newLeadData.value || 8999,
+      value: newLeadData.value || 1499,
       createdAt: 'Just now',
       notes: newLeadData.notes || 'Inquiry received through digital campaign',
       lastActivity: 'Form submitted',
@@ -244,6 +252,47 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       }
       return m;
     }));
+  };
+
+  const addStoreItem = (newItemData: Omit<StoreItem, 'id'>) => {
+    const newItem: StoreItem = {
+      ...newItemData,
+      id: `custom-store-${Date.now()}`,
+      soldCount: 0,
+      isCoachDirect: true,
+      inStock: true,
+      rating: 5.0,
+    };
+    setStoreItems(prev => [newItem, ...prev]);
+    showNotification(`Success! "${newItem.name}" is now live in your Client Store Catalog & Customer App!`, 'success');
+  };
+
+  const purchaseStoreItem = (itemId: string, details?: { notes?: string; slot?: string; address?: string }) => {
+    const item = storeItems.find(i => i.id === itemId);
+    if (!item) return;
+
+    // Increment coach revenue by item price or coachMargin
+    const revenueGained = item.coachMargin ?? item.price;
+    setCoach(prev => ({
+      ...prev,
+      stats: {
+        ...prev.stats,
+        monthRevenue: prev.stats.monthRevenue + revenueGained,
+      }
+    }));
+
+    // Update sold count
+    setStoreItems(prev => prev.map(i => i.id === itemId ? { ...i, soldCount: (i.soldCount || 0) + 1 } : i));
+
+    // Award XP to customer
+    setCustomerXp(prev => prev + 150);
+
+    const isConsult = item.category === 'Consultations' || item.ctaType === 'Book Consultation';
+    if (isConsult) {
+      showNotification(`🎉 1:1 Consultation booked with Coach Kavya for ${details?.slot || 'Tomorrow 4:00 PM'}! +₹${revenueGained.toLocaleString('en-IN')} credited to coach revenue!`, 'success');
+    } else {
+      showNotification(`🎉 Order placed for ${item.name}! +₹${revenueGained.toLocaleString('en-IN')} credited to coach revenue!`, 'success');
+    }
   };
 
   const submitEveningWrapUp = (data: { mealsLogged: boolean; waterGoalHit: boolean; workoutDone: boolean; reflection: string }) => {
@@ -295,6 +344,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         theme,
         setTheme,
         toggleTheme,
+        storeItems,
+        addStoreItem,
+        purchaseStoreItem,
         eveningWrapUpDone,
         submitEveningWrapUp,
       }}

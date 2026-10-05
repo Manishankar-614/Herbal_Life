@@ -30,6 +30,7 @@ import { CustomerProgressScreen } from '../components/customer/CustomerProgressS
 import { CustomerRewardsScreen } from '../components/customer/CustomerRewardsScreen';
 import { CustomerReferralScreen } from '../components/customer/CustomerReferralScreen';
 import { CustomerCoachScreen } from '../components/customer/CustomerCoachScreen';
+import { CustomerShopScreen } from '../components/customer/CustomerShopScreen';
 
 // Admin Screens
 import { AdminDashboardScreen } from '../components/admin/AdminDashboardScreen';
@@ -73,6 +74,7 @@ function MainApp() {
           {customerTab === 'home' && <CustomerHomeScreen />}
           {customerTab === 'journey' && <CustomerJourneyScreen />}
           {customerTab === 'progress' && <CustomerProgressScreen />}
+          {customerTab === 'shop' && <CustomerShopScreen />}
           {customerTab === 'rewards' && <CustomerRewardsScreen />}
           {customerTab === 'referral' && <CustomerReferralScreen />}
           {customerTab === 'coach' && <CustomerCoachScreen />}

@@ -152,9 +152,9 @@ const mockTransactions: SubscriptionTransaction[] = [
 ];
 
 const tierRevenueData = [
-  { tier: 'Scale (₹19,999)', coaches: 28, mrr: 560000, color: '#f59e0b' },
+  { tier: 'Scale (₹14,999)', coaches: 28, mrr: 420000, color: '#f59e0b' },
   { tier: 'Growth (₹9,999)', coaches: 82, mrr: 820000, color: '#10b981' },
-  { tier: 'Essential (₹4,999)', coaches: 32, mrr: 160000, color: '#6366f1' },
+  { tier: 'Essential (₹5,999)', coaches: 32, mrr: 192000, color: '#6366f1' },
 ];
 
 export const AdminSubscriptionsScreen: React.FC = () => {
